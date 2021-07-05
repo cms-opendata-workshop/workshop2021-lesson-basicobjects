@@ -1,7 +1,7 @@
 ---
 title: "CMS Jets and MET"
-teaching: 10
-exercises: 15 
+teaching: 15
+exercises: 0
 questions:
 - "How are jets and missing transverse energy treated in CMS OpenData?"
 objectives:
@@ -98,32 +98,6 @@ These criteria demonstrate how particle-flow jets combine information across sub
 energy should be less than one. Similarly, jets should have some energy from charged hadrons if they overlap the inner tracker, and all the energy should not come from neutral hadrons. 
 A mixture of energy sources is expected for genuine jets. All of these energy fractions (and more) can be accessed from the jet objects. 
 
->## Challenge: Jet ID
->
->Use the [cms-sw github repository](https://github.com/cms-sw/cmssw/tree/CMSSW_5_3_X/DataFormats/JetReco/) to learn the methods available for PFJets 
->(hint: the header file is included from `AOD2NanoAOD.cc`). Implement the jet ID and **reject** jets that do not pass. Rejection means that information
->about these jets will not be stored in any of the tree branches.
->
->>## Solution
->>The header file we need is for particle-flow jets: `interface/PFJet.h` from the link given. It shows many functions like this:
->>~~~
->>float chargedHadronEnergyFraction () const {return chargedHadronEnergy () / energy ();}
->>~~~
->>{: .language-cpp}
->>These functions give the energy from a certain type of particle flow candidate as a fraction of the jet's total energy. We can apply the
->>conditions given to reject jets from noise at the same time we apply a momentum threshold:
->>~~~
->>for (auto it = jets->begin(); it != jets->end(); it++) {
->>  if (it->pt > jet_min_pt && it->chargedHadronEnergyFraction() > 0 && it->neutralHadronEnergyFraction() < 1.0 &&
->>      it->electronEnergyFraction() < 1.0 && it->photonEnergyFraction() < 1.0){
->>
->>    // calculate things on jets
->>  }
->>}
->>~~~
->>{: .language-cpp}
->{: .solution}
-{: .challenge}
 
 
 ## MET
@@ -160,36 +134,6 @@ as opposed to a neutrino or similar non-interacting particle. The four-vectors o
 uncertainties are required to compute the significance of the MET signature. MET that is directed nearly (anti)colinnear with 
 a physics object is likely to arise from mismeasurement and should not have a large significance. 
 
->## Challenge: real and fake MET
->
->Compile all your changes to `AOD2NanoAOD.cc` so far and run over the simulation sample again. 
->This test file contains top quark pair events, so some events will have leptonic decays that include neutrinos
->and some events will not. Review TTree::Draw from the pre-exercises -- can you draw histograms of MET versus MET significance 
->and infer which events have leptonic decays? 
->
-> ~~~
-> $ scram b
-> $ cmsRun configs/simulation_cfg.py
-> $ # edit simulation_cfg.py to use the Drell-Yan test file, and save output_DY.root
-> $ cmsRun confings/simulation_cfg.py
-> $ root -l output.root
-> [0] TTree *ttbar = (TTree*)_file0->Get("aod2nanoaod/Events");
-> [1] TFile *_file1 = TFile::Open("output_DY.root");
-> [2] TTree *dy = (TTree*)_file1->Get("aod2nanoaod/Events");
-> [3] ttbar->Draw("...things...","...any cuts...","norm)
-> [4] dy->Draw("...things...","...any cuts...","norm pe same")
-> ~~~
-> {: .language-bash}
->
->>## Solution
->>
->>The difference between the Drell-Yan events with primarily fake MET and the top pair events with primarily genuine MET
->>can be seen by drawing `MET_pt` or by drawing `MET_significance`. In both distributions the Drell-Yan events have 
->>smaller values than the top pair events.
->>
->>![width=0.5](../assets/img/DYvsTT_MET.png) ![](../assets/img/DYvsTT_signif.png)
->{: .solution}
-{: .challenge}
 
 {% include links.md %}
 

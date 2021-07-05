@@ -1,5 +1,5 @@
 ---
-title: "CMS Physics Objects"
+title: "Prep: CMS Physics Objects"
 teaching: 10
 questions:
 - "What are the main CMS Physics Objects and how do I access them?"

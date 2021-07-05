@@ -12,7 +12,20 @@ Outline of this lesson:
  * Basics of Jets and MET
  * Basics of Triggers
 
-Challenge / HW Idea: take lesson information about reconstruction / identification / isolation to build selection criteria for different physics scenarios like "reconstruct H -> ZZ -> 4 leptons", versus "reject electrons in a H -> gamma gamma search". Grab 2-3 diverse publications from Run 1 to compare their ideas to what the analyzers chose. 
+Prep work: Read episodes 1/2/3
+
+Demo/Q's (45 mins):
+ * Answer Q's on prep (15 mins)
+ * Walk through Episodes 4/5 on more complicated things (15 mins JME, 15 mins trigger)
+
+Hands-on:
+ * episode 06-handson.md
+ * Muon or tau or jet ID exericse (everybody picks one?)
+ * Real-vs-fake MET exercise
+
+Challenge:
+ * episode 07-challenge.md
+ * take lesson information about reconstruction / identification / isolation to build selection criteria for different physics scenarios like "reconstruct H -> ZZ -> 4 leptons", versus "reject electrons in a H -> gamma gamma search". Grab 2-3 diverse publications from Run 1 to compare their ideas to what the analyzers chose. 
 
 <!-- this is an html comment -->
 

@@ -1,6 +1,6 @@
 ---
-title: "Electrons and Photons"
-teaching: 15
+title: "Prep: Electrons and Photons"
+teaching: 10
 exercises: 0
 questions:
 - "How are electrons and photons treated in CMS OpenData?"
