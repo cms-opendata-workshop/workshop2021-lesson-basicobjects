@@ -23,40 +23,44 @@ FIXME info about electrons and photons
 
 ## Electron 4-vector and track information
 
-FIXME TO POET
-
-In the loop over the electron collection, access the elements of the four-vector: 
+In the loop over the electron collection in `ElectronAnalyzer.cc`, we access elements of the four-vector as shown in the last episode: 
 ~~~
-value_el_pt[value_el_n] = it->pt();
-value_el_eta[value_el_n] = it->eta();
-value_el_phi[value_el_n] = it->phi();
-value_el_mass[value_el_n] = it->mass();
+for (reco::GsfElectronCollection::const_iterator itElec=myelectrons->begin(); itElec!=myelectrons->end(); ++itElec){
+    ...
+    electron_e.push_back(itElec->energy());
+    electron_pt.push_back(itElec->pt());
+    ...
+}
 ~~~
 {: .language-cpp}
 
-Many objects are also connected to tracks from the CMS tracking detectors. Information from
-tracks provides other kinematic quantities that are common to multiple types of objects.
+Most charged physics objects are also connected to tracks from the CMS tracking detectors. The charge of the object can be queried directly:
+~~~
+electron_ch.push_back(itElec->charge());
+~~~
+{: .language-cpp}
+
+Information from tracks provides other kinematic quantities that are common to multiple types of objects.
 Often, the most pertinent information about an object to access from its
 associated track is its **impact parameter** with respect to the primary interaction vertex.
 Since muons can also be tracked through the muon detectors, we first check if the track is
 well-defined, and then access impact parameters in the xy-plane (`dxy` or `d0`) and along
 the beam axis (`dz`), as well as their respective uncertainties. 
 
-FIXME TO POET
-
 ~~~
-value_el_charge[value_el_n] = it->charge();
+math::XYZPoint pv(vertices->begin()->position());  // line 148
+...
 
-auto trk = it->gsfTrack();
-value_el_dxy[value_el_n] = trk->dxy(pv);
-value_el_dz[value_el_n] = trk->dz(pv);
-value_el_dxyErr[value_el_n] = trk->d0Error();
-value_el_dzErr[value_el_n] = trk->dzError();
+auto trk = itElec->gsfTrack();
+...
+electron_dxy.push_back(trk->dxy(pv));
+electron_dz.push_back(trk->dz(pv));
+electron_dxyError.push_back(trk->d0Error());
+electron_dzError.push_back(trk->dzError());
 ~~~
 {: .language-cpp}
 
-
-FIXME -- NOTE SIMILARITIES AND DIFFERENCES FOR PHOTONS
+Photons, as neutral objects, do not have a direct track link (though displaced track segments may appear from electrons or positrons produced by the photon as it transits the detector material). While the `charge()` method exists for all objects, it is not used in photon analyses. 
 
 ## Detector information for identification
 
@@ -80,32 +84,33 @@ value efficiency over background rejection, and some analyses are the opposite.
 The "standard" identification and isolation algorithm results can be accessed from the physics
 object classes.
 
- * Electrons: [EGamma Public Data](https://twiki.cern.ch/twiki/bin/view/CMSPublic/EgammaPublicData)
- * Photons: [EGamma Public Data](https://twiki.cern.ch/twiki/bin/view/CMSPublic/EgammaPublicData), [Summary document (see Table 1 for photon ID)](https://cms-physics.web.cern.ch/cms-physics/public/EGM-10-006-pas.pdf)
+ * Electrons: [EGamma Public Data (2011 and 2012)](https://twiki.cern.ch/twiki/bin/view/CMSPublic/EgammaPublicData)
+ * Photons: [7 TeV/2011 Photon identification](https://cms-physics.web.cern.ch/cms-physics/public/EGM-10-006-pas.pdf), [8 TeV/2012 Photon identification](https://arxiv.org/pdf/1502.02702.pdf)
 
-FIXME -- ADAPT THIS BELOW TO BOTH OBJECTS
+>Note: current POET implementations of identification working points are appropriate for 2012 data analysis.
+{: .testimonial}
+
 
 Most `reco::<object>` classes contain member functions that return detector-related information. In the
-case of electrons and photons, we see this information used as identification criteria:
+case of electrons, we see this information used as identification criteria:
 
 ~~~
-value_el_isLoose[value_el_n] = false;
-value_el_isMedium[value_el_n] = false;
-value_el_isTight[value_el_n] = false;
-if ( abs(it->eta()) <= 1.479 ) {
-  if ( abs(it->deltaEtaSuperClusterTrackAtVtx())<.007 && abs(it->deltaPhiSuperClusterTrackAtVtx())<.15 &&
-       it->sigmaIetaIeta()<.01 && it->hadronicOverEm()<.12 &&
-       abs(trk->dxy(pv))<.02 && abs(trk->dz(pv))<.2 &&
-       missing_hits<=1 && pfIso<.15 && passelectronveto==true &&
-       abs(1/it->ecalEnergy()-1/(it->ecalEnergy()/it->eSuperClusterOverP()))<.05 ){
-
-    value_el_isLoose[value_el_n] = true;
-
-    if ( abs(it->deltaEtaSuperClusterTrackAtVtx())<.004 && abs(it->deltaPhiSuperClusterTrackAtVtx())<.06 && abs(trk->dz(pv))<.1 ){
-      value_el_isMedium[value_el_n] = true;
-
-      if (abs(it->deltaPhiSuperClusterTrackAtVtx())<.03 && missing_hits<=0 && pfIso<.10 ){
-        value_el_isTight[value_el_n] = true;
+bool isLoose = false, isMedium = false, isTight = false;
+if ( abs(itElec->eta()) <= 1.479 ) {   
+  if ( abs(itElec->deltaEtaSuperClusterTrackAtVtx()) < .007 && abs(itElec->deltaPhiSuperClusterTrackAtVtx()) < .15 && 
+       itElec->sigmaIetaIeta() < .01 && itElec->hadronicOverEm() < .12 && 
+       abs(trk->dxy(pv)) < .02 && abs(trk->dz(pv)) < .2 && 
+       missing_hits <= 1 && passelectronveto==true &&
+       abs(1/itElec->ecalEnergy()-1/(itElec->ecalEnergy()/itElec->eSuperClusterOverP()))<.05 &&
+       el_pfIso < .15 ){
+        
+    isLoose = true;
+        
+    if ( abs(itElec->deltaEtaSuperClusterTrackAtVtx())<.004 && abs(itElec->deltaPhiSuperClusterTrackAtVtx())<.06 && abs(trk->dz(pv))<.1 ){
+      isMedium = true;
+              
+      if (abs(itElec->deltaPhiSuperClusterTrackAtVtx())<.03 && missing_hits<=0 && el_pfIso<.10 ){
+        isTight = true;
       }
     }
   }
@@ -113,20 +118,40 @@ if ( abs(it->eta()) <= 1.479 ) {
 ~~~
 {: .language-cpp}
 
-The first two criteria (`deltaEta` and `deltaPh`) indicate how the electron's trajectory varies between the track and the ECAL cluster,
-with smaller variations preferred for the "tightest" quality levels. The `sigmaIetaIeta` criterion describes the variance of the ECAL
-cluster in psuedorapidity (recall the "ieta" labels on the red LEGO bricks!). There are futher criteria for the ratio of hadronic to 
-electromagnetic energy deposits, the track impact parameters, and the difference between the ECAL energy and electron's momentum --
-all of which are expected to be small for genuine electrons with well-reconstructed tracks. Finally, a good electron should have very 
-few "missing hits" (gaps in the trajectory through the inner tracker), be reasonably isolated from other particle-flow candidates in the
-nearby spatial region, and should pass an algorithm that rejects electrons from photon conversion in the tracker. Similar information from 
-the detector is used to form the identification criteria for all physics objects. 
+Let's break down these criteria:
+ * `deltaEta...` and `deltaPhi...` indicate how the electron's trajectory varies between the track and the ECAL cluster,
+with smaller variations preferred for the "tightest" quality levels.
+ * `sigmaIetaIeta` describes the variance of the ECAL cluster in psuedorapidity ("ieta" is an integer index for this angle).
+ * `hadronicOverEm` describes the ratio of HCAL to ECAL energy depositrs, which should be small for good quality electrons.
+ * The impact parameters `dxy` and `dz` should also be small for good quality electrons produced in the initial collision.
+ * Missing hits are gaps in the trajectory through the inner tracker (shouldn't be any!)
+ * The conversion veto is an algorithm that rejects electrons coming from photon conversions in the tracker, which should instead be reconstructed as part of the photon.
+ * The criterion using `ecalEnergy` and `eSuperClusterOverP` compares the differences between the electron's energy and momentum measurements, which should be very similar to each other for good electrons. 
+ * `el_pfIso` represents how much energy, relative to the electron's, within a cone around the electron comes from other particle-flow candidates. If this value is small the electron is likely "isolated" in the local region.
 
-## Generated particle matching
+**Isolation** is computed in similar ways for all physics objects: search for particles in a cone around the object of interest and sum up their energies, subtracting off the energy deposited by pileup particles. This sum divided by the object of interest's transverse momentum is called **relative isolation** and is the most common way to determine whether an object was produced "promptly" in or following the proton-proton collision (ex: electrons from a Z boson decay, or photons from a Higgs boson decay). Relative isolation values will tend to be large for particles that emerged from weak decays of hadrons within jets, or other similar "nonprompt" processes. For electrons, isolation is computed as:
+
+~~~
+float el_pfiso = 999;
+if (itElec->passingPflowPreselection()) {
+  double rho = *(rhoHandle.product());
+  double Aeff = effectiveArea0p3cone(itElec->eta());
+  auto iso03 = itElec->pfIsolationVariables();
+  el_pfIso = (iso03.chargedHadronIso + std::max(0,iso03.neutralHadronIso + iso03.photonIso - rho*Aeff)/itElec->pt();
+}
+~~~
+{: .language-cpp}
+
+Photon isolation and identification are very similar to the formulas for electrons, with different specific criteria. 
+
+## Generated particle matching -- FIXME
 
 Simulated files also contain information about the generator-level particles that
 were propagated into the showering and detector simulations. Physics objects can
 be matched to these generated particles spatially.
+
+
+FIXME TO POET
 
 The AOD2NanoAOD tool sets up several utility functions for matching: `findBestMatch`,
 `findBestVisibleMatch`, and `subtractInvisible`. The `findBestMatch` function takes

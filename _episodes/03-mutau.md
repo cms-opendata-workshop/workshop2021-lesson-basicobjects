@@ -19,51 +19,26 @@ keypoints:
 - "Member functions for these algorithms are documented on public TWiki pages."
 ---
 
-FIXME info about electrons and photons
+Muons and tau leptons are have many features that are similar to electrons and photons, but their own unique identification algorithms. In this episode we will be studying `MuonAnalyzer.cc` and `TauAnalyzer.cc`. We explored the muon kinematics member functions in Episode 1, which are identical for all objects. 
 
-## Electron 4-vector and track information
-
-FIXME TO POET
-
-In the loop over the electron collection, access the elements of the four-vector: 
-~~~
-  value_mu_pt[value_mu_n] = it->pt();
-  value_mu_eta[value_mu_n] = it->eta();
-  value_mu_phi[value_mu_n] = it->phi();
-  value_mu_mass[value_mu_n] = it->mass();
-~~~
-{: .language-cpp}
-
-Many objects are also connected to tracks from the CMS tracking detectors. Information from
-tracks provides other kinematic quantities that are common to multiple types of objects.
-Often, the most pertinent information about an object to access from its
-associated track is its **impact parameter** with respect to the primary interaction vertex.
-Since muons can also be tracked through the muon detectors, we first check if the track is
-well-defined, and then access impact parameters in the xy-plane (`dxy` or `d0`) and along
-the beam axis (`dz`), as well as their respective uncertainties. 
-
-FIXME TO POET
-
-~~~
-value_mu_charge[value_mu_n] = it->charge();
-auto trk = it->globalTrack(); // muon track
-
-if (trk.isNonnull()) {
-   value_mu_dxy[value_mu_n] = trk->dxy(pv);
-   value_mu_dz[value_mu_n] = trk->dz(pv);
-   value_mu_dxyErr[value_mu_n] = trk->d0Error();
-   value_mu_dzErr[value_mu_n] = trk->dzError();
-}
-~~~
-{: .language-cpp}
-
-
-FIXME -- NOTE SIMILARITIES AND DIFFERENCES FOR TAUs
-
-## Detector information for identification
-
+CMS TWiki references:
  * Muons: [SWGuide Muon ID](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMuonId)
  * Tau leptons: [Legacy Tau ID Run 1](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookPFTauTagging#Legacy_Tau_ID_Run_I), [Nutshell Recipe](https://twiki.cern.ch/twiki/bin/view/CMSPublic/NutShellRecipeFor5312AndNewer)
+
+## Muon identification and isolation
+
+Muons have a different member functions for accessing the associated track compared to electrons:
+
+~~~
+auto trk = itmuon->globalTrack();
+if (trk.isNonnull()) {
+  muon_dxy.push_back(trk->dxy(pv));
+  muon_dz.push_back(trk->dz(pv));
+  muon_dxyErr.push_back(trk->d0Error());
+  muon_dzErr.push_back(trk->dzError());
+  }
+~~~
+{: .language-cpp}
 
 The CMS Muon object group has created member functions for the identification algorithms that simply
 storing pass/fail decisions about the quality of each muon. As shown below, the algorithm depends
@@ -80,24 +55,16 @@ from pileup contributions to this cone. Decisions are made by comparing this ene
 transverse momentum of the muon. 
 
 ~~~
-for (auto it = muons->begin(); it != muons->end(); it++) {
-
-    // If this muon has isolation quantities...
-    if (it->isPFMuon() && it->isPFIsolationValid()) {
-
-       // get the isolation info in a certain cone size:
-       auto iso04 = it->pfIsolationR04();
-
-       // and calculate the energy relative to the muon's transverse momentum
-       value_mu_pfreliso04all[value_mu_n] = (iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/it->pt();
-    }
-
-    // Store the pass/fail decisions about Tight ID
-    value_mu_tightid[value_mu_n] = muon::isTightMuon(*it, *vertices->begin());
+if (itmuon->isPFMuon() && itmuon->isPFIsolationValid()) {
+  auto iso04 = itmuon->pfIsolationR04();
+  muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt)/itmuon->pt());
 }
+
+muon_tightid.push_back(muon::isTightMuon(*itmuon, *vertices->begin()));
 ~~~
 {: .language-cpp}
 
+## Tau identification
 
 The CMS Tau object group relies almost entirely on pre-computed algorithms to determine the
 quality of the tau reconstruction and the decay type. Since this object is not stable and has
@@ -108,9 +75,9 @@ In contrast to the muon object, tau algorithm results are typically saved in the
 as their own PFTauDisciminator collections, rather than as part of the tau object class.
 
 ~~~
-// Get the tau collection
-Handle<PFTauCollection> taus;
-iEvent.getByLabel(InputTag("hpsPFTauProducer"), taus);
+// Get the tau collection (the exact name is given in poet_cfg.py
+Handle<reco::PFTauCollection> mytaus;
+iEvent.getByLabel(tauInput, mytaus);
 
 // Get various tau discriminator collections
 Handle<PFTauDiscriminator> tausLooseIso, tausVLooseIso, tausMediumIso, tausTightIso,
@@ -128,16 +95,16 @@ of the discriminant for that tau. Note that the arrays are filled by calls to th
 discriminant objects, but referencing the vector index of the tau in the main tau collection.
 
 ~~~
-for (auto it = taus->begin(); it != taus->end(); it++) {
+for (reco::PFTauCollection::const_iterator itTau=mytaus->begin(); itTau!=mytaus->end(); ++itTau){
 
     // store the tau decay mode
-    value_tau_decaymode[value_tau_n] = it->decayMode();
+    tau_decaymode.push_back(itTau->decayMode());
 
     // Discriminators
-    const auto idx = it - taus->begin();
-    value_tau_iddecaymode[value_tau_n] = tausDecayMode->operator[](idx).second;
-    value_tau_idisoraw[value_tau_n] = tausRawIso->operator[](idx).second;
-    value_tau_idisovloose[value_tau_n] = tausVLooseIso->operator[](idx).second;
+    const auto idx = itTau - mytaus->begin();
+    tau_iddecaymode.push_back(tausDecayMode->operator[](idx).second);
+    tau_idisoraw.push_back(tausRawIso->operator[](idx).second);
+    tau_idisovloose.push_back(tausVLooseIso->operator[](idx).second);    
     // ...etc...
 }
 ~~~

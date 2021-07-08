@@ -81,25 +81,22 @@ physics objects. Other important modules might include:
 
 ## Opening a module
 
->## Setup -- FIXME TO POET
->The [AOD2NanoAODOutreachTool](https://github.com/cms-opendata-analyses/AOD2NanoAODOutreachTool) 
+>## Setup
+>The [PhysObjectExtractorTool](https://github.com/cms-legacydata-analyses/PhysObjectExtractorTool) (POET) 
 >repository is the example we will use for accessing information from AOD files. If you have not already done so, 
 >please check out the "dummyworkshop" branch of this repository:
 >
 >~~~
 >$ cd ~/CMSSW_5_3_32/src/
 >$ cmsenv
->$ mkdir workspace
->$ cd workspace
->$ git clone -b dummyworkshop git://github.com/jmhogan/AOD2NanoAODOutreachTool.git 
->$ cd AOD2NanoAODOutreachTool
+>$ git clone -b dummyworkshop git://github.com/cms-legacydata-analyses/PhysObjectExtractorTool.git 
+>$ cd PhysObjectExtractorTool
 >$ scram b
->$ vi src/AOD2NanoAOD.cc #(or your favorite text editor)
 >~~~
 >{: .language-bash}
 {: .prereq}
 
-In the source code for this tool, the definitions of the muon classes are included:
+In the various source code files for this tool, found in `PhysObjectExtractor/src/`, the definitions of different classes are included. Continuing with muons as the example, we include the following in `PhysObjectExtractor/src/MuonAnalyzer.cc`:
 ~~~
 #include "DataFormats/MuonReco/interface/Muon.h"
 #include "DataFormats/MuonReco/interface/MuonFwd.h"
@@ -107,59 +104,66 @@ In the source code for this tool, the definitions of the muon classes are includ
 ~~~
 {: .language-cpp}
 
-You learned about the EDAnalyzer class in the pre-exercises. The AOD2NanoAOD tool is an EDAnalyzer. 
+You learned about the EDAnalyzer class in the pre-exercises. The POET is an EDAnalyzer. 
 The "analyze" function of an EDAnalyzer is performed once per event. Muons can be accessed like this:
 
 ~~~
-void AOD2NanoAOD::analyze(const edm::Event &iEvent,
-                          const edm::EventSetup &iSetup) {
+void
+MuonAnalyzer::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
+{
 
   using namespace edm;
-  using namespace reco;
   using namespace std;
 
-  Handle<MuonCollection> muons;
-  iEvent.getByLabel(InputTag("muons"), muons);
+  Handle<reco::MuonCollection> mymuons;
+  iEvent.getByLabel(muonInput, mymuons);
 ~~~ 
 {: .language-cpp}
 
-The result is an  called "muons" which is a collection of all the muon objects. 
-In the next episode we'll look at the member functions for muons.
+The `edm::InputTag` object `muonInput` is defined in `python/poet_cfg.py` to be "muons", which will point to one of the muon collections we saw in the event content above. The result of the `getByLabel` command is a variable called "mymuons" which is a collection of all the muon objects. 
 Collection classes are generally constructed as std::vectors. We can 
-quickly access the number of muons per event and create a loop to access 
+quickly access create a loop to access 
 individual muons:
 
 ~~~
-int nMuons = muons->size();
-for (auto it = muons->begin(); it != muons->end(); it++) {
-    if (it->pt() > mu_min_pt) {
-        // do things here, next episode!
+for (reco::MuonCollection::const_iterator itmuon=mymuons->begin(); itmuon!=mymuons->end(); ++itmuon){
+    if (itmuon->pt() > mu_min_pt) {
+        // do things here, see below!
     }
 }
 ~~~
 {: .language-cpp}
 
+## Accessing basic kinematic quantities
 
 Many of the most important kinematic quantities defining a physics object are accessed in a
 common way across all the objects. All objects have associated energy-momentum vectors, typically
 constructed using **transverse momentum, pseudorapdity, azimuthal angle, and
 mass or energy**.
 
-## 4-vector access functions
-
-In `AOD2NanoAOD/src/AOD2NanoAOD.cc` the muon four-vector elements are accessed as shown below. The
+In `MuonAnalyzer.cc` the muon four-vector elements are accessed as shown below. The
 values for each muon are stored into an array, which will become a branch in a ROOT TTree. 
 
 ~~~
-for (auto it = muons->begin(); it != muons->end(); it++) {
-  value_mu_pt[value_mu_n] = it->pt();
-  value_mu_eta[value_mu_n] = it->eta();
-  value_mu_phi[value_mu_n] = it->phi();
-  value_mu_mass[value_mu_n] = it->mass();
+for (reco::MuonCollection::const_iterator itmuon=mymuons->begin(); itmuon!=mymuons->end(); ++itmuon){
+  if (itmuon->pt() > mu_min_pt) {
+
+    muon_e.push_back(itmuon->energy());
+    muon_pt.push_back(itmuon->pt());
+    muon_eta.push_back(itmuon->eta());
+    muon_phi.push_back(itmuon->phi());
+
+    muon_px.push_back(itmuon->px());
+    muon_py.push_back(itmuon->py());
+    muon_pz.push_back(itmuon->pz());
+
+    muon_mass.push_back(itmuon->mass());
+
 }
 ~~~
 {: .language-cpp}
 
+You will see the same type of kinetmatic member functions in all the different analyzers in the `src/` folder!
 
 {% include links.md %}
 
