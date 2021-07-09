@@ -1,5 +1,5 @@
 ---
-title: "CMS Jets and MET"
+title: "Demo: CMS Jets and MET"
 teaching: 15
 exercises: 0
 questions:

@@ -1,5 +1,5 @@
 ---
-title: "Triggers"
+title: "Demo: Triggers"
 teaching: 15
 exercises: 0
 questions:
