@@ -1,6 +1,6 @@
 ---
 title: "Demo: CMS Jets and MET"
-teaching: 15
+teaching: 20
 exercises: 0
 questions:
 - "How are jets and missing transverse energy treated in CMS OpenData?"
@@ -69,19 +69,43 @@ There are various methods to remove their contributions from jets:
 
 ## Accessing jets in CMS software
 
-Jets software classes have the same basic 4-vector methods as the objects discussed in the previous lesson:
+Jets software classes have the same basic 4-vector methods as the objects discussed in the previous lesson. There are two principle ways to interact with jets in the OpenData files: via the `reco::Jet` class or the `pat::Jet` class. PAT stands for "Physics Analysis Toolkit", which is a framework for applying and accessing many common analysis-level algorithms that are used in CMS. The POET features `JetAnalyzer.cc` to demonstrate working with RECO jets and `PatJetAnalyzer.cc` to demonstrate working with PAT jets. 
 
+In `JetAnalyzer.cc` 
 ~~~
-Handle<CaloJetCollection> jets;
-iEvent.getByLabel(InputTag("ak5PFJets"), jets);
+Handle<reco::PFJetCollection> myjets;
+iEvent.getByLabel(jetInput, myjets);  // jetInput is "ak5PFJets"
 
-for (auto it = jets->begin(); it != jets->end(); it++) {
+for (reco::PFJetCollection::const_iterator itjet=myjets->begin(); itjet!=myjets->end(); ++itjet){
 
-    value_jet_pt[value_jet_n] = it->pt();
-    value_jet_eta[value_jet_n] = it->eta();
-    value_jet_phi[value_jet_n] = it->phi();
-    value_jet_mass[value_jet_n] = it->mass();
+  ...
+  jet_e.push_back(itjet->energy());
+  jet_pt.push_back(itjet->pt());
+  jet_px.push_back(itjet->px());
+  jet_py.push_back(itjet->py());
+  jet_pz.push_back(itjet->pz());
+  jet_eta.push_back(itjet->eta());
+  jet_phi.push_back(itjet->phi());
+  jet_ch.push_back(itjet->charge());
+  jet_mass.push_back(itjet->mass());
 
+}
+~~~
+{: .language-cpp}
+
+In `PatJetAnalyzer.cc` the jet collection has a different type (and name), and all the energy-related quantities **have corrections applied**, which will be discussed more in an upcoming lesson.
+~~~
+Handle<std::vector<pat::Jet>> myjets;
+iEvent.getByLabel(jetInput, myjets); // jetInput is "selectedPatJetsAK5PFCorr"
+
+for (std::vector<pat::Jet>::const_iterator itjet=myjets->begin(); itjet!=myjets->end(); ++itjet){
+
+  ...
+  corr_jet_mass.push_back(itjet->mass());
+  corr_jet_e.push_back(itjet->energy());
+  corr_jet_px.push_back(itjet->px());
+  corr_jet_py.push_back(itjet->py());
+  corr_jet_pz.push_back(itjet->pz());
 }
 ~~~
 {: .language-cpp}
@@ -106,26 +130,39 @@ A mixture of energy sources is expected for genuine jets. All of these energy fr
 The magnitude of the missing transverse momentum vector is called missing transverse energy and referred to with the acronym "MET". 
 Since energy corrections are made to the particle flow jets, those corrections are propagated to MET by adding back the momentum vectors of the
 original jets and then subtracting the momentum vectors of the corrected jets. This correction is called "Type 1" and is standard for all CMS analyses.
-The jet energy corrections will be discussed more deeply at the end of this lesson.  
 
-In `AOD2NanoAOD.cc` we open the particle flow MET module and extract the magnitude and angle of the MET, the sum of all energy
+In `MetAnalyzer.cc` we open the particle flow MET module and extract the magnitude and angle of the MET, the sum of all energy
 in the detector, and variables related to the "significance" of the MET. Note that MET quantities have a single value for the 
 entire event, unlike the objects studied previously. 
 
 ~~~
-Handle<PFMETCollection> met;
-iEvent.getByLabel(InputTag("pfMet"), met);
+Handle<reco::PFMETCollection> mymets	;
+iEvent.getByLabel(metInput, mymets);	// metInput opens "pfMet"
 
-value_met_pt = met->begin()->pt();
-value_met_phi = met->begin()->phi();
-value_met_sumet = met->begin()->sumEt();
+if(mymets.isValid()){
+  met_e = mymets->begin()->sumEt();
+  met_pt = mymets->begin()->pt();
+  met_px = mymets->begin()->px();
+  met_py = mymets->begin()->py();
+  met_phi = mymets->begin()->phi();
+  
+  met_significance = mymets->begin()->significance();
+}
+~~~
+{: .language-cpp}
 
-value_met_significance = met->begin()->significance();
-auto cov = met->begin()->getSignificanceMatrix();
-value_met_covxx = cov[0][0];
-value_met_covxy = cov[0][1];
-value_met_covyy = cov[1][1];
+If the PAT process has been run, Type 1 corrected MET is also available in `MetAnalyzer.cc`:
+~~~
+Handle<reco::PFMETCollection> patmets;
+iEvent.getByLabel(metInputPat, patmets);
 
+if(patmets.isValid()){
+  met_e = patmets->begin()->sumEt();
+  met_pt = patmets->begin()->pt();
+  met_px = patmets->begin()->px();
+  met_py = patmets->begin()->py();
+  met_phi = patmets->begin()->phi();
+}
 ~~~
 {: .language-cpp}
 

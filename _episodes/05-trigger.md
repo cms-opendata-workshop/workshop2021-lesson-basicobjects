@@ -1,6 +1,6 @@
 ---
 title: "Demo: Triggers"
-teaching: 15
+teaching: 10
 exercises: 0
 questions:
 - "Key question (FIXME)"
