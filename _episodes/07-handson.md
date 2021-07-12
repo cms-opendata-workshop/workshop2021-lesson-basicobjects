@@ -24,11 +24,11 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 > * try to recreate the Tight identification working point from detector information criteria!
 >> ## Solution:
 >> The DeltaBeta correction for pileup involves subtracting off half of the pileup contribution
->> that can be accessed from the "iso03" object already being used:
+>> that can be accessed from the "iso04" object already being used:
 >>~~~
 >>if (itmuon->isPFMuon() && itmuon->isPFIsolationValid()) {
->>  auto iso03 = itmuon->pfIsolationR03();
->>  muon_pfreliso03all.push_back((iso03.sumChargedHadronPt + iso03.sumNeutralHadronEt + iso03.sumPhotonEt - 0.5*iso03.sumPUPt)/itmuon->pt());
+>>  auto iso04 = itmuon->pfIsolationR04();
+>>  muon_pfreliso04all.push_back((iso04.sumChargedHadronPt + iso04.sumNeutralHadronEt + iso04.sumPhotonEt - 0.5*iso04.sumPUPt)/itmuon->pt());
 >>~~~
 >>{: .language-cpp}
 >>
@@ -195,3 +195,5 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >>![width=0.5](../assets/img/DYvsTT_MET.png) ![](../assets/img/DYvsTT_signif.png)
 >{: .solution}
 {: .challenge}
+
+{% include links.md %}
