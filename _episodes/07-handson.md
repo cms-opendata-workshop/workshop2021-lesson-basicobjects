@@ -22,6 +22,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 > * adjust the 0.3-cone muon isolation calculation to apply the "DeltaBeta" pileup correction.
 > * add the pass/fail information about the Loose identification working point.
 > * try to recreate the Tight identification working point from detector information criteria!
+>
 >> ## Solution:
 >> The DeltaBeta correction for pileup involves subtracting off half of the pileup contribution
 >> that can be accessed from the "iso04" object already being used:
