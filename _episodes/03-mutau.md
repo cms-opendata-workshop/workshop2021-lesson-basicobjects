@@ -77,7 +77,7 @@ as their own PFTauDisciminator collections, rather than as part of the tau objec
 ~~~
 // Get the tau collection (the exact name is given in poet_cfg.py
 Handle<reco::PFTauCollection> mytaus;
-iEvent.getByLabel(tauInput, mytaus);
+iEvent.getByLabel(tauInput, mytaus); // tauInput opens "hpsPFTauProducer"
 
 // Get various tau discriminator collections
 Handle<PFTauDiscriminator> tausLooseIso, tausVLooseIso, tausMediumIso, tausTightIso,

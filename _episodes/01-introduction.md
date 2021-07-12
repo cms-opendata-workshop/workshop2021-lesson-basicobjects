@@ -116,14 +116,13 @@ MuonAnalyzer::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
   using namespace std;
 
   Handle<reco::MuonCollection> mymuons;
-  iEvent.getByLabel(muonInput, mymuons);
+  iEvent.getByLabel(muonInput, mymuons); // muonInput opens "muons"
 ~~~ 
 {: .language-cpp}
 
 The `edm::InputTag` object `muonInput` is defined in `python/poet_cfg.py` to be "muons", which will point to one of the muon collections we saw in the event content above. The result of the `getByLabel` command is a variable called "mymuons" which is a collection of all the muon objects. 
 Collection classes are generally constructed as std::vectors. We can 
-quickly access create a loop to access 
-individual muons:
+quickly access create a loop to access individual muons:
 
 ~~~
 for (reco::MuonCollection::const_iterator itmuon=mymuons->begin(); itmuon!=mymuons->end(); ++itmuon){

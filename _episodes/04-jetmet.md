@@ -48,7 +48,7 @@ measure and determines whether to combine them:
 ![](../assets/img/clustering.png)
 
 The momentum power (-2) used by the anti-kt algorithm means that higher-momentum particles are clustered first. This leads to jets with a round shape that
-tend to be centered on the hardest particle. In CMS software this clustering is implemented using the [[fastjet][www.fastjet.fr]] package. 
+tend to be centered on the hardest particle. In CMS software this clustering is implemented using the [FastJet](www.fastjet.fr) package. 
 
 <img src="antikt.png" alt="" />
 ![](../assets/img/antikt.png)
@@ -136,7 +136,7 @@ in the detector, and variables related to the "significance" of the MET. Note th
 entire event, unlike the objects studied previously. 
 
 ~~~
-Handle<reco::PFMETCollection> mymets	;
+Handle<reco::PFMETCollection> mymets;
 iEvent.getByLabel(metInput, mymets);	// metInput opens "pfMet"
 
 if(mymets.isValid()){
@@ -154,7 +154,7 @@ if(mymets.isValid()){
 If the PAT process has been run, Type 1 corrected MET is also available in `MetAnalyzer.cc`:
 ~~~
 Handle<reco::PFMETCollection> patmets;
-iEvent.getByLabel(metInputPat, patmets);
+iEvent.getByLabel(metInputPat, patmets); // metInputPat opens "pfType1CorrectedMet"
 
 if(patmets.isValid()){
   met_e = patmets->begin()->sumEt();

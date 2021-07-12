@@ -24,7 +24,7 @@ For the Higgs search and/or your own process of interest, use the information yo
 
 > ## Signal
 > Which final state particles would you expect to observe in the detector from your "signal" process?
-{: .question}
+{: .objectives}
 
 Based on these particles, consider:
  * Which trigger or triggers would be useful to make sure your signal events are represented in the dataset? 
@@ -35,7 +35,7 @@ Based on these particles, consider:
 
 > ## Background
 > Which SM backgrounds could easily mimic your signal, given a few extra physics objects, or a few missing physics objects?
-{: .question}
+{: .objectives}
 
 Based on these processes, consider:
  * Which background simulations should you include in your study? 
@@ -43,7 +43,7 @@ Based on these processes, consider:
  * Are there any objects you should *veto* from your events?
  * What quality criteria might you choose for vetoing objects?
 
->## Solutions? 
+>## Solutions 
 >In the final session for this lesson we will go over the actual analysis choices for H -> tau tau and discuss approaches for some physics processes you chose for this challenge.
 {: .testimonial}
 

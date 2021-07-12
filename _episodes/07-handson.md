@@ -16,7 +16,7 @@ keypoints:
 
 Choose your exercise! The first several exercises all relate to manipulating identification criteria for muons, taus, or jets. Please complete one of them.
 
->## Exercise: add alternate muon IDs and isolation corrections
+>## Exercise 1 option A: add alternate muon IDs and isolation corrections
 >
 >Using the documentation on the TWiki page:
 > * adjust the 0.3-cone muon isolation calculation to apply the "DeltaBeta" pileup correction.
@@ -73,8 +73,10 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >>    }
 >> ~~~
 >>{: .language-cpp}
+>{: .solution}
+{: .challenge}
 
->## Exercise: add alternate tau IDs
+>## Exercise 1 option B: add alternate tau IDs
 >
 >Many other tau discriminants exist. Based on information from the TWiki, 
 >save the values for some discriminants that are based on rejecting electrons or muons.
@@ -135,7 +137,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >{: .solution}
 {: .challenge}
 
->## Exercise: apply noise jet ID
+>## Exercise 1 option C: apply noise jet ID
 >
 >Use the [cms-sw github repository](https://github.com/cms-sw/cmssw/tree/CMSSW_5_3_X/DataFormats/PatCandidates/) to learn the methods available for pat::Jets 
 >(hint: the header file is included from `PatJetAnalyzer.cc`). Implement the jet ID and **reject** jets that do not pass. Rejection means that information
@@ -163,7 +165,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >{: .solution}
 {: .challenge}
 
->## Exercise: real and fake MET
+>## Exercise 2: real and fake MET
 >
 >Compile all your changes to POET so far and run 400 events from two different simulation samples. 
 >One test file contains top quark pair events, so some events will have leptonic decays that include neutrinos
