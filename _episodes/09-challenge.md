@@ -27,9 +27,10 @@ For the Higgs search and/or your own process of interest, use the information yo
 {.question}
 
 Based on these particles, consider:
- * Which trigger or triggers would be useful to make sure your signal events are represented in the dataset?
+ * Which trigger or triggers would be useful to make sure your signal events are represented in the dataset? 
  * Which objects should you require in each event?
- * What quality criteria might you require for each object?
+ * What kinematic criteria might you requier for each object? (momentum, angular regions, etc)
+ * What quality criteria might you require for each object? (identification, isolation)
  * Are there any correlations between your objects that you might exploit?
 
 > ## Background
