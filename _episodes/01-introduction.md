@@ -84,12 +84,12 @@ physics objects. Other important modules might include:
 >## Setup
 >The [PhysObjectExtractorTool](https://github.com/cms-legacydata-analyses/PhysObjectExtractorTool) (POET) 
 >repository is the example we will use for accessing information from AOD files. If you have not already done so, 
->please check out the "dummyworkshop" branch of this repository:
+>please check out this repository:
 >
 >~~~
 >$ cd ~/CMSSW_5_3_32/src/
 >$ cmsenv
->$ git clone -b dummyworkshop git://github.com/cms-legacydata-analyses/PhysObjectExtractorTool.git 
+>$ git clone git://github.com/cms-legacydata-analyses/PhysObjectExtractorTool.git 
 >$ cd PhysObjectExtractorTool
 >$ scram b
 >~~~
