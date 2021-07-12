@@ -42,4 +42,6 @@ Based on these processes, consider:
  * Are there any objects you should *veto* from your events?
  * What quality criteria might you choose for vetoing objects?
 
+In the final session for this lesson we will go over the actual analysis choices for H -> tau tau and discuss approaches for some physics processes you chose for this challenge.
+
 {% include links.md %}
