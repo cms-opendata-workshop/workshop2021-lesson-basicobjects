@@ -3,65 +3,78 @@ title: "Basic objects hands-on"
 teaching: 0
 exercises: 40
 questions:
-- "FIXME"
+- "How can I navigate the physics object references to compute identification criteria?"
+- "How can I separate events with and without invisible particles?"
 objectives:
-- "FIXME"
+- "Practice expanding identification criteria beyond POET defaults."
+- "Practice interacting with ROOT file output from POET."
 keypoints:
-- "FIXME"
+- "All physics objects have multiple identification and isolation schemes."
+- "POET implements the most common identification and isolation criteria used in analyses."
+- "MET exists in all events, but significant differences can be seen between samples with and without real MET."
 ---
 
->## Challenge: alternate IDs and isolations
+Choose your exercise! The first several exercises all relate to manipulating identification criteria for muons, taus, or jets. Please complete one of them.
+
+>## Exercise: add alternate muon IDs and isolation corrections
 >
->Using the documentation on the TWiki page, adjust the 0.4-cone muon isolation calculation
->to apply the "DeltaBeta" pileup correction.
->Also add the pass/fail information about the Loose and Soft identification working points.
+>Using the documentation on the TWiki page:
+> * adjust the 0.3-cone muon isolation calculation to apply the "DeltaBeta" pileup correction.
+> * add the pass/fail information about the Loose identification working point.
+> * try to recreate the Tight identification working point from detector information criteria!
 >> ## Solution:
 >> The DeltaBeta correction for pileup involves subtracting off half of the pileup contribution
->> that can be accessed from the "iso04" object already being used:
+>> that can be accessed from the "iso03" object already being used:
 >>~~~
->>value_mu_pfreliso04all[value_mu_n] =
->>    (iso04.sumChargedHadronPt + max(0.,iso04.sumNeutralHadronEt + iso04.sumPhotonEt- 0.5*iso04.sumPUPt))/it->pt();
+>>if (itmuon->isPFMuon() && itmuon->isPFIsolationValid()) {
+>>  auto iso03 = itmuon->pfIsolationR03();
+>>  muon_pfreliso03all.push_back((iso03.sumChargedHadronPt + iso03.sumNeutralHadronEt + iso03.sumPhotonEt - 0.5*iso03.sumPUPt)/itmuon->pt());
 >>~~~
 >>{: .language-cpp}
 >>
->> To add new ID variables we follow the same sequence as other challenges: declaration, branch, access. 
->> You might add these beneath the existing "Tight" ID in all three places:
+>> To add new variables we need to check four code locations: declarations, branches, vector clearing, and vector filling. 
+>> You might add Loose ID beneath the existing Tight and Soft IDs in each section:
 >>~~~
->>bool value_mu_tightid[max_mu];
->>bool value_mu_softid[max_mu];
->>bool value_mu_looseid[max_mu];
->>~~~
->>{: .language-cpp}
->>~~~
->>tree->Branch("Muon_tightId", value_mu_tightid, "Muon_tightId[nMuon]/O");
->>tree->Branch("Muon_softId", value_mu_softid, "Muon_softId[nMuon]/O");
->>tree->Branch("Muon_looseId", value_mu_looseid, "Muon_looseId[nMuon]/O");
+>>std::vector<float> muon_softid;
+>>std::vector<float> muon_looseid;
 >>~~~
 >>{: .language-cpp}
 >>~~~
->>value_mu_tightid[value_mu_n] = muon::isTightMuon(*it, *vertices->begin());
->>value_mu_softid[value_mu_n] = muon::isSoftMuon(*it, *vertices->begin());
->>value_mu_looseid[value_mu_n] = muon::isLooseMuon(*it);
+>>mtree->Branch("muon_softid",&muon_softid);
+>>mtree->GetBranch("muon_softid")->SetTitle("soft cut-based ID");
+>>mtree->Branch("muon_looseid",&muon_looseid);
+>>mtree->GetBranch("muon_looseid")->SetTitle("loose cut-based ID");
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>>muon_softid.clear();
+>>muon_looseid.clear();
+>>~~~
+>>{: .language-cpp}
+>>~~~
+>>muon_softid.push_back(muon::isSoftMuon(*itmuon, *vertices->begin()));
+>>muon_looseid.push_back(muon::isLooseMuon(*itmuon));
 >>~~~
 >>{: .language-cpp}
 >>
 >> The TWiki also gives the member functions needed to reconstruct the muon ID. We can see from the built-in tightID method that a 
->> vertex is needed for some of the criteria: `muon::isTightMuon(*it, *vertices->begin())`. To see how to interact with the
->> vertex collection you can refer back to the vertex section starting at line 504 (according to the file in the github repository). 
+>> vertex is needed for some of the criteria: `muon::isTightMuon(*it, *vertices->begin())`. To learn more about the
+>> vertex collection you can refer to `VertexAnalyzer.cc`.
 >> ~~~
->> value_mu_isTightByHand[value_mu_n] = false;
+>> std::vector<bool> muon_isTightByHand;
+>>
 >> if( it->isGlobalMuon() && it->isPFMuon() && 
 >>     it->globalTrack()->normalizedChi2() < 10. && it->globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
 >>     it->numberOfMatchedStations() > 1 && 
 >>     fabs(it->muonBestTrack()->dxy(vertices->begin()->position())) < 0.2 && fabs(it->muonBestTrack()->dz(vertex->position())) < 0.5 &&
 >>     it->innerTrack()->hitPattern().numberOfValidPixelHits() > 0 && it->innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5)
 >>    {
->>      value_mu_isTightByHand[value_mu_n] = true;
+>>      muon_isTightByHand.push_back(true);
 >>    }
 >> ~~~
 >>{: .language-cpp}
 
->## Challenge: alternate tau IDs
+>## Exercise: add alternate tau IDs
 >
 >Many other tau discriminants exist. Based on information from the TWiki, 
 >save the values for some discriminants that are based on rejecting electrons or muons.
@@ -73,22 +86,17 @@ keypoints:
 >>
 >> Add declarations:
 >>~~~
->>bool value_tau_idantieleloose[max_tau];
->>bool value_tau_idantielemedium[max_tau];
->>bool value_tau_idantieletight[max_tau];
->>bool value_tau_idantimuloose[max_tau];
->>bool value_tau_idantimumedium[max_tau];
->>bool value_tau_idantimutight[max_tau];
+>>std::vector<bool> tau_idantieleloose;
+>>std::vector<bool> tau_idantieletight;
+>>std::vector<bool> tau_idantimuloose;
+>>std::vector<bool> tau_idantimutight;
 >>~~~
 >>{: .language-cpp}
 >> Add branches:
 >>~~~
->>tree->Branch("Tau_idAntiEleLoose", value_tau_idantieleloose, "Tau_idAntiEleLoose[nTau]/O");
->>tree->Branch("Tau_idAntiEleMedium", value_tau_idantielemedium, "Tau_idAntiEleMedium[nTau]/O");
->>tree->Branch("Tau_idAntiEleTight", value_tau_idantieletight, "Tau_idAntiEleTight[nTau]/O");
->>tree->Branch("Tau_idAntiMuLoose", value_tau_idantimuloose, "Tau_idAntiMuLoose[nTau]/O");
->>tree->Branch("Tau_idAntiMuMedium", value_tau_idantimumedium, "Tau_idAntiMuMedium[nTau]/O");
->>tree->Branch("Tau_idAntiMuTight", value_tau_idantimutight, "Tau_idAntiMuTight[nTau]/O");
+>>mtree->Branch("tau_idantieleloose",&tau_idantieleloose);
+>>mtree->GetBranch("tau_idantieleloose")->SetTitle("tau id loose electron rejection");
+>> // ...etc for other IDs...
 >>~~~
 >>{: .language-cpp}
 >> Create handles and get the information from the input file:
@@ -97,57 +105,55 @@ keypoints:
 >>iEvent.getByLabel(InputTag("hpsPFTauProducer"), taus);
 >>
 >>Handle<PFTauDiscriminator> tausLooseIso, tausVLooseIso, tausMediumIso, tausTightIso,
->>                           tausDecayMode, tausLooseEleRej, tausMediumEleRej,
->>                           tausTightEleRej, tausLooseMuonRej, tausMediumMuonRej,
->>                           tausTightMuonRej, tausRawIso;
+>>                           tausDecayMode, tausRawIso, tausLooseEleRej, tausTightEleRej,
+>>			     tausLooseMuonRej, tausTightMuonRej;
 >>
 >> // new things only
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseElectronRejection"),
->>        tausLooseEleRej);
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByMediumElectronRejection"),
->>        tausMediumEleRej);
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightElectronRejection"),
->>        tausTightEleRej);
+>>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseElectronRejection"),tausLooseEleRej);
+>>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightElectronRejection"),tausTightEleRej);
 >>
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseMuonRejection"),
->>        tausLooseMuonRej);
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByMediumMuonRejection"),
->>        tausMediumMuonRej);
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightMuonRejection"),
->>        tausTightMuonRej);
+>>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseMuonRejection"),tausLooseMuonRej);
+>>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightMuonRejection"),tausTightMuonRej);
+>>~~~
+>>{: .language-cpp}
+>>Clear the vectors at the beginning of each event:
+>>~~~
+>>tau_idantieleloose.clear()
+>>tau_idantieletight.clear()
+>>tau_idantimuloose.clear()
+>>tau_idantimutight.clear()
 >>~~~
 >>{: .language-cpp}
 >> And finally, access the discriminator from the second element of the pair:
 >>~~~
->>value_tau_idantieleloose[value_tau_n] = tausLooseEleRej->operator[](idx).second;
->>value_tau_idantielemedium[value_tau_n] = tausMediumEleRej->operator[](idx).second;
->>value_tau_idantieletight[value_tau_n] = tausTightEleRej->operator[](idx).second;
->>value_tau_idantimuloose[value_tau_n] = tausLooseMuonRej->operator[](idx).second;
->>value_tau_idantimumedium[value_tau_n] = tausMediumMuonRej->operator[](idx).second;
->>value_tau_idantimutight[value_tau_n] = tausTightMuonRej->operator[](idx).second;
+>>tau_idantieleloose.push_back(tausLooseEleRej->operator[](idx).second);
+>>tau_idantieletight.push_back(tausTightEleRej->operator[](idx).second);
+>>tau_idantimuloose.push_back(tausLooseMuonRej->operator[](idx).second);
+>>tau_idantimutight.push_back(tausTightMuonRej->operator[](idx).second);
 >>~~~
 >>{: .language-cpp}
 >{: .solution}
 {: .challenge}
 
->## Challenge: Jet ID
+>## Exercise: apply noise jet ID
 >
->Use the [cms-sw github repository](https://github.com/cms-sw/cmssw/tree/CMSSW_5_3_X/DataFormats/JetReco/) to learn the methods available for PFJets 
->(hint: the header file is included from `AOD2NanoAOD.cc`). Implement the jet ID and **reject** jets that do not pass. Rejection means that information
+>Use the [cms-sw github repository](https://github.com/cms-sw/cmssw/tree/CMSSW_5_3_X/DataFormats/PatCandidates/) to learn the methods available for pat::Jets 
+>(hint: the header file is included from `PatJetAnalyzer.cc`). Implement the jet ID and **reject** jets that do not pass. Rejection means that information
 >about these jets will not be stored in any of the tree branches.
 >
 >>## Solution
->>The header file we need is for particle-flow jets: `interface/PFJet.h` from the link given. It shows many functions like this:
+>>The header file we need is for particle-flow jets: `interface/Jet.h` from the link given. It shows many functions like this:
 >>~~~
->>float chargedHadronEnergyFraction () const {return chargedHadronEnergy () / energy ();}
+>>/// chargedHadronEnergyFraction (relative to uncorrected jet energy)
+>>float chargedHadronEnergyFraction() const {return chargedHadronEnergy()/((jecSetsAvailable() ? jecFactor(0) : 1.)*energy());}
 >>~~~
 >>{: .language-cpp}
 >>These functions give the energy from a certain type of particle flow candidate as a fraction of the jet's total energy. We can apply the
 >>conditions given to reject jets from noise at the same time we apply a momentum threshold:
 >>~~~
->>for (auto it = jets->begin(); it != jets->end(); it++) {
->>  if (it->pt > jet_min_pt && it->chargedHadronEnergyFraction() > 0 && it->neutralHadronEnergyFraction() < 1.0 &&
->>      it->electronEnergyFraction() < 1.0 && it->photonEnergyFraction() < 1.0){
+>>for (std::vector<pat::Jet>::const_iterator itjet=myjets->begin(); itjet!=myjets->end(); ++itjet){
+>>  if (itjet->chargedHadronEnergyFraction() > 0 && itjet->neutralHadronEnergyFraction() < 1.0 &&
+>>      itjet->electronEnergyFraction() < 1.0 && itjet->photonEnergyFraction() < 1.0){
 >>
 >>    // calculate things on jets
 >>  }
@@ -157,24 +163,26 @@ keypoints:
 >{: .solution}
 {: .challenge}
 
->## Challenge: real and fake MET
+>## Exercise: real and fake MET
 >
->Compile all your changes to `AOD2NanoAOD.cc` so far and run over the simulation sample again. 
->This test file contains top quark pair events, so some events will have leptonic decays that include neutrinos
->and some events will not. Review TTree::Draw from the pre-exercises -- can you draw histograms of MET versus MET significance 
+>Compile all your changes to POET so far and run 400 events from two different simulation samples. 
+>One test file contains top quark pair events, so some events will have leptonic decays that include neutrinos
+>and some events will not. The other test file contains Drell-Yan events without neutrinos.
+>Review TTree::Draw from the pre-exercises -- can you draw histograms of MET versus MET significance 
 >and infer which events have leptonic decays? 
 >
 > ~~~
 > $ scram b
-> $ cmsRun configs/simulation_cfg.py
-> $ # edit simulation_cfg.py to use the Drell-Yan test file, and save output_DY.root
-> $ cmsRun confings/simulation_cfg.py
-> $ root -l output.root
-> [0] TTree *ttbar = (TTree*)_file0->Get("aod2nanoaod/Events");
-> [1] TFile *_file1 = TFile::Open("output_DY.root");
-> [2] TTree *dy = (TTree*)_file1->Get("aod2nanoaod/Events");
-> [3] ttbar->Draw("...things...","...any cuts...","norm)
-> [4] dy->Draw("...things...","...any cuts...","norm pe same")
+> $ # edit python/poet_cfg.py to run over 400 events from the ttbar simulation test file.
+> $ cmsRun python/poet_cfg.py
+> $ # edit python/poet_cfg.py to use the Drell-Yan test file, and to save a file called myoutput_DY.root
+> $ cmsRun python/poet_cfg.py
+> $ root -l myoutput.root
+> [0] TTree *ttbar = (TTree*)_file0->Get("mymets/Events");
+> [1] TFile *_file1 = TFile::Open("myoutput_DY.root");
+> [2] TTree *dy = (TTree*)_file1->Get("mymets/Events");
+> [3] ttbar->Draw("...a branch name...", "...any cuts go here...", "norm)
+> [4] dy->Draw("...a branch name...", "...any cuts go here...", "norm pe same")
 > ~~~
 > {: .language-bash}
 >
