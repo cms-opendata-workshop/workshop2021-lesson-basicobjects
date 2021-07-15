@@ -45,7 +45,7 @@ the other objects in the event or be "isolated". For instance, an isolated muon 
 In contrast, a non-isolated muon can come from a weak decay inside a jet. 
 
 Muon isolation is calculated from a combination of factors: energy from charged hadrons, energy from
-neutral hadrons, and energy from photons, all in a cone of radius $\Delta R < 0.3$ or 0.4 around
+neutral hadrons, and energy from photons, all in a cone of radius dR < 0.3 or 0.4 around
 the muon. Many algorithms also feature a "correction factor" that subtracts average energy expected
 from pileup contributions to this cone -- we'll explore this in the hands-on exercise. Decisions are made by comparing this energy sum to the
 transverse momentum of the muon. 

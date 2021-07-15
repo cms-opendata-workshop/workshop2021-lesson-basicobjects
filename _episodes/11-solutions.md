@@ -28,7 +28,7 @@ For the Higgs search and/or your own process of interest, use the information yo
 > Which final state particles would you expect to observe in the detector from your "signal" process?
 >> ## Solution
 >> For the [Higgs -> tau tau search](https://arxiv.org/pdf/1401.5041.pdf) we expect one hadronic tau object, one muon, and MET from the Higgs boson decay, and potentially two or more jets if the Higgs boson was produced via vector boson fusion.
->> ![Feynmans](http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-a.png) ![Feynmans](https://github.com/cms-sw/cmssw/tree/CMSSW_5_3_X/DataFormats/PatCandidates/)
+>> ![Feynmans](http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-a.png =200x) ![Feynmans](http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-b.png =200x)
 >{: .solution}
 {: .objectives}
 
@@ -62,6 +62,7 @@ Based on these particles, consider:
 >  * We learned from the tau reference twiki that we should always require `taus_iddecaymode` to be true.
 >  * The trigger adds an extra criterion: we should at least require that the `taus_idisoloose` flag is true. In fact, the version of this analysis on the OpenData portal requires that even the `taus_idisotight` flag is true.
 >  * We want to protect against selecting taus that were actually misidentified electrons or muons. This is done by requiring `taus_idantieletight` and `taus_idantimutight` to be true.
+>
 > Muon selection:
 >  * The ID is not restricted by the trigger, but the "tight" working point is by far the most popular choice for any signal muons.
 >  * Since the muon is not expected to be produced very near to a jet or the tau, this analysis requires that the `muon_pfreliso04all` isolation be < 0.1.

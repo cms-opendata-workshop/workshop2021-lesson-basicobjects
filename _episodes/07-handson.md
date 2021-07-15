@@ -19,7 +19,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >## Exercise 1 option A: add alternate muon IDs and isolation corrections
 >
 >Using the documentation on the TWiki page:
-> * adjust the 0.3-cone muon isolation calculation to apply the "DeltaBeta" pileup correction.
+> * adjust the 0.4-cone muon isolation calculation to apply the "DeltaBeta" pileup correction.
 > * add the pass/fail information about the Loose identification working point.
 > * try to recreate the Tight identification working point from detector information criteria!
 >
@@ -80,7 +80,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >## Exercise 1 option B: add alternate tau IDs
 >
 >Many other tau discriminants exist. Based on information from the TWiki, 
->save the values for some discriminants that are based on multivariate analysis techniques
+>save the values for some discriminants that are based on multivariate analysis techniques.
 >
 >> ## Solution:
 >> The TWiki describes Loose/Medium/Tight ID levels for a "IsolationMVA" and "IsolationMVA2" algorithms.
@@ -175,7 +175,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 > [0] TTree *ttbar = (TTree*)_file0->Get("mymets/Events");
 > [1] TFile *_file1 = TFile::Open("myoutput_DY.root");
 > [2] TTree *dy = (TTree*)_file1->Get("mymets/Events");
-> [3] ttbar->Draw("...a branch name...", "...any cuts go here...", "norm)
+> [3] ttbar->Draw("...a branch name...", "...any cuts go here...", "norm")
 > [4] dy->Draw("...a branch name...", "...any cuts go here...", "norm pe same")
 > ~~~
 > {: .language-bash}

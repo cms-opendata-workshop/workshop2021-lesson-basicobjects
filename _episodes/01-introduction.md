@@ -8,7 +8,6 @@ objectives:
 - "Identify object code collections in AOD files"
 - "Access an object code collection"
 - "Learn member functions for standard momentum-energy vectors"
-- "Learn member functions for common track-based quantities"
 keypoints:
 - "CMS physics objects include: muons, electrons, taus, photons, and jets." 
 - "Missing transverse momentum is derived from physics objects (negative vector sum)."
