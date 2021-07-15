@@ -1,25 +1,23 @@
 ---
-title: "Prep: Electrons and Photons"
+title: "Electrons and Photons"
 teaching: 10
 exercises: 0
 questions:
 - "How are electrons and photons treated in CMS OpenData?"
 objectives:
-- "Learn member functions for common track-based quantities"
-- "Learn how to connect a physics object with a generator-level particle"
-- "Bookmark informational web pages for different objects"
-- "Learn member functions for identification and isolation of objects"
-- "Learn member functions for detector-related quantities"
-- "Practice accessing and saving these quantities"
+- "Learn electron member functions for common track-based quantities"
+- "Bookmark informational web pages for electrons and photons"
+- "Learn member functions for identification and isolation of electrons"
+- "Learn member functions for electron detector-related quantities"
 keypoints:
-- "Objects are matched to generator-level particles based on spatial relationships."
-- "Other quantities such as impact parameters and charge have common member functions."
+- "Quantities such as impact parameters and charge have common member functions."
 - "Physics objects in CMS are reconstructed from detector signals and are never 100% certain!"
 - "Identification and isolation algorithms are important for reducing fake objects."
 - "Member functions for these algorithms are documented on public TWiki pages."
 ---
 
-FIXME info about electrons and photons
+Electrons and photons are both reconstructed in the electromagnetic calorimeter in CMS, so they share many common properties and functions.
+In POET we will study the `ElecronAnalyzer.cc` and `PhotonAnalyzer.cc`.
 
 ## Electron 4-vector and track information
 

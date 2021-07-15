@@ -1,5 +1,5 @@
 ---
-title: "Prep: CMS Physics Objects"
+title: "Physics Object Extractor Tool"
 teaching: 10
 questions:
 - "What are the main CMS Physics Objects and how do I access them?"
@@ -79,7 +79,7 @@ physics objects. Other important modules might include:
 *   Pileup (info about multiple collisions from the same pp crossing)
 *   Generator-level information (in simulation) 
 
-## Opening a module
+## Physics Object Extractor Tool (POET)
 
 >## Setup
 >The [PhysObjectExtractorTool](https://github.com/cms-legacydata-analyses/PhysObjectExtractorTool) (POET) 
@@ -104,7 +104,7 @@ In the various source code files for this tool, found in `PhysObjectExtractor/sr
 ~~~
 {: .language-cpp}
 
-You learned about the EDAnalyzer class in the pre-exercises. The POET is an EDAnalyzer. 
+You learned about the EDAnalyzer class in the pre-exercises. The POET is an EDAnalyzer -- let's refresh how to access data inside the EDAnalyzer.
 The "analyze" function of an EDAnalyzer is performed once per event. Muons can be accessed like this:
 
 ~~~
@@ -120,7 +120,7 @@ MuonAnalyzer::analyze(const edm::Event &iEvent, const edm::EventSetup &iSetup)
 ~~~ 
 {: .language-cpp}
 
-The `edm::InputTag` object `muonInput` is defined in `python/poet_cfg.py` to be "muons", which will point to one of the muon collections we saw in the event content above. The result of the `getByLabel` command is a variable called "mymuons" which is a collection of all the muon objects. 
+The result of the `getByLabel` command is a variable called "mymuons" which is a collection of all the muon objects. 
 Collection classes are generally constructed as std::vectors. We can 
 quickly access create a loop to access individual muons:
 
@@ -163,6 +163,39 @@ for (reco::MuonCollection::const_iterator itmuon=mymuons->begin(); itmuon!=mymuo
 {: .language-cpp}
 
 You will see the same type of kinetmatic member functions in all the different analyzers in the `src/` folder!
+
+## The POET configuration file
+
+As you learned in the pre-exercise, EDAnalyzers can be configured using a python file. In POET this is called `python/poet_cfg.py`.
+It contains all of the processing setup as well as configuration for each EDAnalyzer we can run. The first several analyzers are configured here:
+~~~
+#---- Configure the PhysObjectExtractor modules!
+
+#---- More information about InputCollections at https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideRecoDataTable
+process.myevents = cms.EDAnalyzer('EventAnalyzer')                              
+
+process.myelectrons = cms.EDAnalyzer('ElectronAnalyzer',
+         InputCollection = cms.InputTag("gsfElectrons")
+         )
+
+process.mymuons = cms.EDAnalyzer('MuonAnalyzer',
+     InputCollection = cms.InputTag("muons")
+     )
+
+process.myphotons = cms.EDAnalyzer('PhotonAnalyzer',
+                                   InputCollection = cms.InputTag("photons")
+       )
+~~~
+{: .language-cpp}
+
+Running POET requires 2 command-line arguments:
+ * `isData`: true for data and false (default) for simulation,
+ * `doPat`: true to use the Physics Analysis Toolkit for jets and met (more on that later!) or false (default) to run without this.
+
+~~~
+$ cmsRun python/poet_cfg.py False True  # run in PAT mode on simulation
+~~~
+{: .source}
 
 {% include links.md %}
 

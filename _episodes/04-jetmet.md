@@ -1,6 +1,6 @@
 ---
 title: "Demo: CMS Jets and MET"
-teaching: 20
+teaching: 10
 exercises: 0
 questions:
 - "How are jets and missing transverse energy treated in CMS OpenData?"

@@ -1,21 +1,17 @@
 ---
-title: "Prep: Muons and Taus"
+title: "Muons and Taus"
 teaching: 10
 exercises: 0
 questions:
 - "How are muons and taus treated in CMS OpenData?"
 objectives:
-- "Learn member functions for common track-based quantities"
-- "Learn how to connect a physics object with a generator-level particle"
+- "Learn member functions for muon track-based quantities"
 - "Bookmark informational web pages for different objects"
-- "Learn member functions for identification and isolation of objects"
-- "Learn member functions for detector-related quantities"
-- "Practice accessing and saving these quantities"
+- "Learn member functions for identification and isolation of muons and taus"
 keypoints:
-- "Objects are matched to generator-level particles based on spatial relationships."
-- "Other quantities such as impact parameters and charge have common member functions."
+- "Track access may differ, but track-related member functions are common across objects."
 - "Physics objects in CMS are reconstructed from detector signals and are never 100% certain!"
-- "Identification and isolation algorithms are important for reducing fake objects."
+- "Muons and taus typically use pre-configured identification and isolation variable member functions."
 - "Member functions for these algorithms are documented on public TWiki pages."
 ---
 
@@ -51,7 +47,7 @@ In contrast, a non-isolated muon can come from a weak decay inside a jet.
 Muon isolation is calculated from a combination of factors: energy from charged hadrons, energy from
 neutral hadrons, and energy from photons, all in a cone of radius $\Delta R < 0.3$ or 0.4 around
 the muon. Many algorithms also feature a "correction factor" that subtracts average energy expected
-from pileup contributions to this cone. Decisions are made by comparing this energy sum to the
+from pileup contributions to this cone -- we'll explore this in the hands-on exercise. Decisions are made by comparing this energy sum to the
 transverse momentum of the muon. 
 
 ~~~

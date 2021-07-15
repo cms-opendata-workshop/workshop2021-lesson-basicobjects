@@ -80,26 +80,24 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >## Exercise 1 option B: add alternate tau IDs
 >
 >Many other tau discriminants exist. Based on information from the TWiki, 
->save the values for some discriminants that are based on rejecting electrons or muons.
+>save the values for some discriminants that are based on multivariate analysis techniques
 >
 >> ## Solution:
->> The TWiki describes Loose/Medium/Tight ID levels for an "AntiElectron" algorithm and an "AntiMuon" algorithm. 
+>> The TWiki describes Loose/Medium/Tight ID levels for a "IsolationMVA" and "IsolationMVA2" algorithms.
 >> They can be accessed like the other tau IDs, but you might need to refer to the output of `edmDumpEventContent` 
 >> to find the exact form of the InputTag name. 
 >>
 >> Add declarations:
 >>~~~
->>std::vector<bool> tau_idantieleloose;
->>std::vector<bool> tau_idantieletight;
->>std::vector<bool> tau_idantimuloose;
->>std::vector<bool> tau_idantimutight;
+>>std::vector<bool> tau_idisoMVA2loose;
+>>std::vector<bool> tau_idisoMVA2tight;
 >>~~~
 >>{: .language-cpp}
 >> Add branches:
 >>~~~
->>mtree->Branch("tau_idantieleloose",&tau_idantieleloose);
->>mtree->GetBranch("tau_idantieleloose")->SetTitle("tau id loose electron rejection");
->> // ...etc for other IDs...
+>>mtree->Branch("tau_idisoMVA2loose",&tau_idisoMVA2loose);
+>>mtree->GetBranch("tau_idisoMVA2loose")->SetTitle("tau id loose isolation from MVA2");
+>> // ...etc for other ID...
 >>~~~
 >>{: .language-cpp}
 >> Create handles and get the information from the input file:
@@ -108,31 +106,24 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 >>iEvent.getByLabel(InputTag("hpsPFTauProducer"), taus);
 >>
 >>Handle<PFTauDiscriminator> tausLooseIso, tausVLooseIso, tausMediumIso, tausTightIso,
->>                           tausDecayMode, tausRawIso, tausLooseEleRej, tausTightEleRej,
->>			     tausLooseMuonRej, tausTightMuonRej;
+>>                           tausDecayMode, tausRawIso, tausTightEleRej,
+>>			     tausTightMuonRej, tausLooseIsoMVA2, tausTightIsoMVA2;
 >>
 >> // new things only
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseElectronRejection"),tausLooseEleRej);
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightElectronRejection"),tausTightEleRej);
->>
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseMuonRejection"),tausLooseMuonRej);
->>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightMuonRejection"),tausTightMuonRej);
+>>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByLooseIsolationMVA2"),tausLooseIsoMVA2);
+>>iEvent.getByLabel(InputTag("hpsPFTauDiscriminationByTightIsolationMVA2"),tausTightIsoMVA2);
 >>~~~
 >>{: .language-cpp}
 >>Clear the vectors at the beginning of each event:
 >>~~~
->>tau_idantieleloose.clear()
->>tau_idantieletight.clear()
->>tau_idantimuloose.clear()
->>tau_idantimutight.clear()
+>>tau_idisoMVA2loose.clear()
+>>tau_idisoMVA2tight.clear()
 >>~~~
 >>{: .language-cpp}
 >> And finally, access the discriminator from the second element of the pair:
 >>~~~
->>tau_idantieleloose.push_back(tausLooseEleRej->operator[](idx).second);
->>tau_idantieletight.push_back(tausTightEleRej->operator[](idx).second);
->>tau_idantimuloose.push_back(tausLooseMuonRej->operator[](idx).second);
->>tau_idantimutight.push_back(tausTightMuonRej->operator[](idx).second);
+>>tau_idisoMVA2loose.push_back(tausLooseIsoMVA2->operator[](idx).second);
+>>tau_idisoMVA2tight.push_back(tausTightIsoMVA2->operator[](idx).second);
 >>~~~
 >>{: .language-cpp}
 >{: .solution}
