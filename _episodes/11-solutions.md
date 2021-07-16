@@ -28,7 +28,7 @@ For the Higgs search and/or your own process of interest, use the information yo
 > Which final state particles would you expect to observe in the detector from your "signal" process?
 >> ## Solution
 >> For the [Higgs -> tau tau search](https://arxiv.org/pdf/1401.5041.pdf) we expect one hadronic tau object, one muon, and MET from the Higgs boson decay, and potentially two or more jets if the Higgs boson was produced via vector boson fusion.
->> ![Feynmans](http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-a.png =200x) ![Feynmans](http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-b.png =200x)
+>><img src="http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-a.png" alt="Feynman1" width="300"/> <img src="http://cms-results.web.cern.ch/cms-results/public-results/publications/HIG-13-004/CMS-HIG-13-004_Figure_001-b.png" alt="Feynman2" width="300"/>
 >{: .solution}
 {: .objectives}
 
