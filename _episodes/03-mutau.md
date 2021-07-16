@@ -182,6 +182,8 @@ if(gens.isValid())
     }               
   }
 }
+~~~
+{: .language-cpp}
 
 Matching between generated and reconstructed particles is typically done based on spatial relationships. For example, the generated muon (ID = 13) "matched" to a certain reconstructed muon would be the generated muon that has the smallest angular separation from the reconstructed muon. Angular separation is defined as:
 <img src="https://latex.codecogs.com/svg.image?\Delta&space;R&space;=&space;\sqrt{(\Delta&space;\eta)^2&space;&plus;&space;(\Delta\phi)^2}" title="\Delta R = \sqrt{(\Delta \eta)^2 + (\Delta\phi)^2}" />
