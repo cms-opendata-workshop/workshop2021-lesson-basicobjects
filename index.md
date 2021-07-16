@@ -18,7 +18,7 @@ permalink: index.html  # Is the only page that doesn't follow the pattern /:path
 > ## Prerequisites
 >
 > Work through the **Pre-exercises**:
->  * [VM](https://cms-opendata-workshop.github.io/workshop2021-lesson-virtualmachine/} or [Docker](https://cms-opendata-workshop.github.io/workshop2021-lesson-docker/)
+>  * [VM](https://cms-opendata-workshop.github.io/workshop2021-lesson-virtualmachine/) or [Docker](https://cms-opendata-workshop.github.io/workshop2021-lesson-docker/)
 >  * [ROOT](https://cms-opendata-workshop.github.io/workshop2021-lesson-preexercise-cpp-and-root/)
 >  * [Intro to Physics Objects](https://cms-opendata-workshop.github.io/workshop2021-lesson-introphysicsobjects/)
 >  * [CMSSW](https://cms-opendata-workshop.github.io/workshop2021-lesson-cmssw/)
