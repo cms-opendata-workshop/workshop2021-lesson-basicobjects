@@ -107,11 +107,84 @@ for (reco::PFTauCollection::const_iterator itTau=mytaus->begin(); itTau!=mytaus-
 {: .language-cpp}
 
 
-## Generated particle matching
+## Generator-level particles
 
+In simulation, we can access **generated particles** from the event generation process. 
+You can configure `poet_cfg.py` to store information about generated particles with any [Particle Data Group ID numbers](https://pdg.lbl.gov/2021/reviews/rpp2020-rev-monte-carlo-numbering.pdf) and [generator status codes](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookGenParticleCandidate).
+By default, we will store information for final state electrons, muons, and photons, and taus with an intermediate status:
+~~~
+process.mygenparticle= cms.EDAnalyzer('GenParticleAnalyzer',
+          #---- Collect particles with specific "pdgid:status"
+          #---- Check PDG ID in the PDG.
+          #---- if 0:0, collect them all 
+          input_particle = cms.vstring("1:11","1:13","1:22","2:15")
+          )
+~~~
+{: .language-python}
 
-FIXME -- NOTE VISIBLE MATCH FUNCTIONS FOR TAUS?
+The particles' properties are stored in `GenParticleAnalyzer.cc`. The input collection is not configurable because it is constant across all CMS simulation
+samples: "genParticles". 
+~~~
+Handle<reco::GenParticleCollection> gens;
+iEvent.getByLabel("genParticles", gens);
+~~~
+{: .language-cpp}
 
+We then process the configurable `input_particle` string that was provided from the configuration file. The constructor opens this parameter into a vector of strings called `particle`:
+~~~
+GenParticleAnalyzer::GenParticleAnalyzer(const edm::ParameterSet& iConfig):
+particle(iConfig.getParameter<std::vector<std::string> >("input_particle"))
+{
+  //now do what ever initialization is needed
+  ...code...
+}
+~~~
+{: .language-cpp}
+
+In the `analyze` function we can parse the desired particle/status pairs and check each generated particle against these conditions before storing its kinematic properties, status, and PDG ID into tree branches:
+~~~
+unsigned int i;
+string s1,s2;
+std::vector<int> status_parsed;
+std::vector<int> pdgId_parsed;
+std::string delimiter = ":";
+
+for(i=0;i<particle.size();i++)
+{
+    //get status and pgdId from configuration
+    s1=particle[i].substr(0,particle[i].find(delimiter));
+    s2=particle[i].substr(particle[i].find(delimiter)+1,particle[i].size());
+    //parse string to int
+    status_parsed.push_back(stoi(s1));
+    pdgId_parsed.push_back(stoi(s2));
+}
+
+if(gens.isValid())
+{
+  numGenPart=gens->size();
+  for (reco::GenParticleCollection::const_iterator itGenPart=gens->begin(); itGenPart!=gens->end(); ++itGenPart)
+  {
+    //loop trough all particles selected in configuration
+    for(i=0;i<particle.size();i++)
+    {
+      if((status_parsed[i]==itGenPart->status() && pdgId_parsed[i]==itGenPart->pdgId())||(status_parsed[i]==0 && pdgId_parsed[i]==0))
+      {
+        GenPart_pt.push_back(itGenPart->pt());
+        GenPart_eta.push_back(itGenPart->eta());
+        GenPart_mass.push_back(itGenPart->mass());
+        GenPart_pdgId.push_back(itGenPart->pdgId());
+        GenPart_phi.push_back(itGenPart->phi());
+        GenPart_status.push_back(itGenPart->status());
+        GenPart_px.push_back(itGenPart->px());
+        GenPart_py.push_back(itGenPart->py());
+        GenPart_pz.push_back(itGenPart->pz());
+      }
+    }               
+  }
+}
+
+Matching between generated and reconstructed particles is typically done based on spatial relationships. For example, the generated muon (ID = 13) "matched" to a certain reconstructed muon would be the generated muon that has the smallest angular separation from the reconstructed muon. Angular separation is defined as:
+<img src="https://latex.codecogs.com/svg.image?\Delta&space;R&space;=&space;\sqrt{(\Delta&space;\eta)^2&space;&plus;&space;(\Delta\phi)^2}" title="\Delta R = \sqrt{(\Delta \eta)^2 + (\Delta\phi)^2}" />
 
 
 {% include links.md %}

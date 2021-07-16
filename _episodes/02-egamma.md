@@ -142,6 +142,9 @@ if (itElec->passingPflowPreselection()) {
 
 Photon isolation and identification are very similar to the formulas for electrons, with different specific criteria. 
 
+{% comment %}
+
+
 ## Generated particle matching -- FIXME
 
 Simulated files also contain information about the generator-level particles that
@@ -211,7 +214,7 @@ for (auto p = selectedElectrons.begin(); p != selectedElectrons.end(); p++) {
 {: .language-cpp}
 
 FIXME -- NOTE SIMILARITIES/DIFFERENCES FOR PHOTONS
-
+{% endcomment %}
 
 
 {% include links.md %}
