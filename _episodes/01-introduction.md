@@ -78,6 +78,7 @@ physics objects. Other important modules might include:
 *   Pileup (info about multiple collisions from the same pp crossing)
 *   Generator-level information (in simulation) 
 
+
 ## Physics Object Extractor Tool (POET)
 
 >## Setup
@@ -186,6 +187,8 @@ process.myphotons = cms.EDAnalyzer('PhotonAnalyzer',
        )
 ~~~
 {: .language-cpp}
+
+If multiple collections exist with the same name in the "Module" column from `edmDumpEventContent`, more specific names from the "Label" and "Process" columns can be specified using colon separators: `cms.InputTag("module:label:process")`
 
 Running POET requires 2 command-line arguments:
  * `isData`: true for data and false (default) for simulation,
