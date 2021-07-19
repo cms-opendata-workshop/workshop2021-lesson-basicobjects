@@ -187,7 +187,26 @@ if(gens.isValid())
 
 Matching between generated and reconstructed particles is typically done based on spatial relationships. For example, the generated muon (ID = 13) "matched" to a certain reconstructed muon would be the generated muon that has the smallest angular separation from the reconstructed muon. Angular separation is defined as: <img src="https://latex.codecogs.com/svg.image?\Delta&space;R&space;=&space;\sqrt{(\Delta&space;\eta)^2&space;&plus;&space;(\Delta\phi)^2}" title="\Delta R = \sqrt{(\Delta \eta)^2 + (\Delta\phi)^2}" />
 
-An example analysis code that opens a POET file and performs generated particle matching for several types of reconstructed objects is called [MatchingAnalysis.cc](https://github.com/apetkovi1/PhysObjectExtractorTool/blob/master/PhysObjectExtractor/test/MatchingAnalysis.cc).
+An example analysis code that opens a POET file and performs generated particle matching for several types of reconstructed objects is called [MatchingAnalysis.cc](https://github.com/apetkovi1/PhysObjectExtractorTool/blob/master/PhysObjectExtractor/test/MatchingAnalysis.cc). This provides an example of looping over reconstructed objects (say, muons) and finding the generated particle of the same type that minimizes "dR". A CMSSW built-in function helps calculate dR between the reconstructed object and each generated particle:
+~~~
+float minDeltaR = 999.0;
+float r;
+Int_t j_matched;
+  
+tevent->AddFriend(tgenparticles);
+   
+tevent->GetEntry(event);
+for (Int_t j=0; j<numGenPart;++j)
+{
+  r = deltaR(GenPart_eta->at(j),GenPart_phi->at(j),object_eta,object_phi);
+  if (r < minDeltaR && abs(GenPart_pdgId->at(j)) == object_pdgId) 
+  {
+    minDeltaR = r;
+    j_matched=j;
+  }
+}
+~~~
+{: .language-cpp}
 
 {% include links.md %}
 
