@@ -169,7 +169,7 @@ Choose your exercise! The first several exercises all relate to manipulating ide
 > $ scram b
 > $ # edit python/poet_cfg.py to run over 400 events from the ttbar simulation test file.
 > $ cmsRun python/poet_cfg.py
-> $ # edit python/poet_cfg.py to use the Drell-Yan test file, and to save a file called myoutput_DY.root
+> $ # edit python/poet_cfg.py to use this input file: root://eospublic.cern.ch//eos/opendata/cms/MonteCarlo2012/Summer12_DR53X/DYJetsToLL_M-50_TuneZ2Star_8TeV-madgraph-tarball/AODSIM/PU_RD1_START53_V7N-v1/20000/003063B7-4CCF-E211-9FED-003048D46124.root, and to save a file called myoutput_DY.root
 > $ cmsRun python/poet_cfg.py
 > $ root -l myoutput.root
 > [0] TTree *ttbar = (TTree*)_file0->Get("mymets/Events");
